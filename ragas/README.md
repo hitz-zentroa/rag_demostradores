@@ -27,15 +27,21 @@ En esta rama presentamos una serie de scripts para llevar a cabo evaluaciones de
 ## Flujo de ejecución
 El fichero ``launcher.sh`` ejecuta el código ``main.py`` con la ruta del archivo de configuración ``config.yaml``. En este archivo de configuración **se deben modificar** rutas como la ubicación de los modelos, la ubicación del proyecto, la ubicación del dataset y la ubicación de salida de resultados. El resto de parámetros se han mantenido por defecto con la configuración que nos ofreció mejores resultados durante nuestros experimentos.
 
+```
+sbatch launcher.sh
+```
+
 ### Carga del modelo local
 En ``main.py`` se inicia una instancia de la clase ``RAGEvaluator`` (en ``rag_evaluator.py``) indicando el modelo de embeddings y el modelo generativo que se va a utilizar de manera local. Para ello, cargamos nuestros modelos localmente con HuggingFace mediante ``HuggingFacePipeline`` (consultar función ``RAGEvaluator._get_llm()``) dado el primer caso, o bien mediante ``HuggingFaceEmbeddings`` dado el segundo (consultar función ``RAGEvaluator._get_embeddings()``). Una vez cargados, se adecúan a Ragas con [LangChain](https://docs.ragas.io/en/stable/howtos/integrations/langchain/) mediante ``LangchainLLMWrapper`` y ``LangchainEmbeddingsWrapper`` respectivamente.
 
 ### Selección y/o traducción de prompts
  A continuación se establecen los prompts que van a intervenir en la puntuación de las métricas mediante la función ``RAGEvaluator.set_prompts()``. Su función es buscar dentro de la carpeta de prompts (especificada en ``config.yaml``) la existencia de los archivos predefinidos por Ragas en el mismo idioma indicado en la configuración. Si existen dichos archivos se cargan, y si no, se generan a través de la función ``adapt_prompts()`` de Ragas asignada a cada métrica particularmente.
 
-> ⚠️ **ADVERTENCIA** → La carpeta ``prompts/`` contiene ejemplos de prompts traducidos al español con los modelos de la configuración actual siguiendo el método establecido por Ragas. Dichas traducciones se realizaron en la versión ``ragas v0.2.15``, pero en la más reciente ``ragas v0.3.6``, aplicar el mismo flujo de ejecución nos da errores. Entendemos que se debe a la idoneidad de los modelos, puesto que Ragas espera principalmente LLMs como GPT.
+> ⚠️ **ADVERTENCIA**
+> La carpeta ``prompts/`` contiene ejemplos de prompts traducidos al español con los modelos de la configuración actual siguiendo el método establecido por Ragas. Dichas traducciones se realizaron en la versión ``ragas v0.2.15``, pero en la más reciente ``ragas v0.3.6``, aplicar el mismo flujo de ejecución nos da errores. Entendemos que se debe a la idoneidad de los modelos, puesto que Ragas espera principalmente LLMs como GPT.
 
-> 💡 **CONSEJO** → Dada la configuración actual, la ejecución funcionará porque en el código se utilizarán los archivos de prompts que descargamos previamente. Para una experiencia personalizada en otro idioma que sea lo más similar posible a una ejecución real, recomendamos traducir manualmente los ``"examples"`` de los archivos de prompts de Ragas al idioma deseado y modificar los nombres de archivo o parámetros de configuración pertinentes, siempre respetando el orden y estructura actual que compartimos en este proyecto.
+> 💡 **CONSEJO** 
+> Dada la configuración actual, la ejecución funcionará porque en el código se utilizarán los archivos de prompts que descargamos previamente. Para una experiencia personalizada en otro idioma que sea lo más similar posible a una ejecución real, recomendamos traducir manualmente los ``"examples"`` de los archivos de prompts de Ragas al idioma deseado y modificar los nombres de archivo o parámetros de configuración pertinentes, siempre respetando el orden y estructura actual que compartimos en este proyecto.
 
 ### Evaluación de datasets
 Si todas las configuraciones son correctas, el archivo ``dataset.jsonl`` mantiene la misma estructura y la ejecución hasta este punto ha sucedido con normalidad, empezarán las evaluaciones del conjunto de datos con Ragas. Aunque existen métricas en Ragas que no requieren el uso de LLMs en su puntuación, en nuestro caso aplicamos aquellas que en las que sí intervienen (como se mencionó previamente). Tras esperar a que finalice la ejecución, los resultados deberían aparecer en ``results/`` o aquella carpeta de salida definida en el archivo de configuración.
