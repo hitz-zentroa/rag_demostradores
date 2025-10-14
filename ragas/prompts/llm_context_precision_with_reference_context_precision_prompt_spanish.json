@@ -1,0 +1,41 @@
+ {
+  "ragas_version": "0.3.6",
+  "original_hash": 661526926388935871,
+  "language": "spanish",
+  "instruction": "Given question, answer and context verify if the context was useful in arriving at the given answer. Give verdict as \"1\" if useful and \"0\" if not with json output.",
+  "examples": [
+    {
+      "input": {
+        "question": "¿Qué puedes decirme de Albert Einstein?",
+        "context": "Albert Einstein (14 de marzo de 1879 - 18 de abril de 1955) fue un físico teórico alemán considerado uno de los científicos más importantes e influyentes de todos los tiempos. Conocido sobre todo por desarrollar la teoría de la relatividad, también hizo importantes aportaciones a la mecánica cuántica, por lo que fue una figura central en la revolucionaria remodelación de la comprensión científica de la naturaleza que la física moderna llevó a cabo en las primeras décadas del siglo XX. Su fórmula de equivalencia masa-energía E = mc2, que surge de la teoría de la relatividad, ha sido denominada «la ecuación más famosa del mundo». Recibió el Premio Nobel de Física en 1921 «por sus servicios a la física teórica, y especialmente por su descubrimiento de la ley del efecto fotoeléctrico», un paso fundamental en el desarrollo de la teoría cuántica. Su obra también es conocida por su influencia en la filosofía de la ciencia. En una encuesta realizada en 1999 por la revista británica Physics World entre 130 destacados físicos de todo el mundo, Einstein fue considerado el mejor físico de todos los tiempos. Sus logros intelectuales y su originalidad han hecho de Einstein sinónimo de genio.",
+        "answer": "Albert Einstein, born on 14 March 1879, was a German-born theoretical physicist, widely held to be one of the greatest and most influential scientists of all time. He received the 1921 Nobel Prize in Physics for his services to theoretical physics."
+      },
+      "output": {
+        "reason": "El contexto proporcionado fue realmente útil para llegar a la respuesta dada. El contexto incluye información clave sobre la vida y las contribuciones de Albert Einstein, que se reflejan en la respuesta.",
+        "verdict": 1
+      }
+    },
+    {
+      "input": {
+        "question": "¿Quién ganó la Copa del Mundo CCI 2020?",
+        "context": "La Copa del Mundo masculina T20 del CCI de 2022, celebrada del 16 de octubre al 13 de noviembre de 2022 en Australia, fue la octava edición del torneo. Originalmente programado para 2020, fue pospuesto debido a la pandemia de COVID-19. Inglaterra salió victoriosa, derrotando a Pakistán por cinco wickets en la final para hacerse con su segundo título de la Copa Mundial T20 Masculina del CCI.",
+        "answer": "Inglaterra"
+      },
+      "output": {
+        "reason": "El contexto fue útil para aclarar la situación relativa a la Copa del Mundo de la CCI de 2020 e indicar que Inglaterra fue la ganadora del torneo que estaba previsto celebrar en 2020 pero que en realidad tuvo lugar en 2022.",
+        "verdict": 1
+      }
+    },
+    {
+      "input": {
+        "question": "¿Cuál es la montaña más alta del mundo?",
+        "context": "Los Andes son la cordillera continental más larga del mundo, situada en Sudamérica. Se extiende por siete países y cuenta con muchos de los picos más altos del hemisferio occidental. La cordillera es conocida por sus diversos ecosistemas, como la meseta andina de gran altitud y la selva amazónica.",
+        "answer": "Monte Everest."
+      },
+      "output": {
+        "reason": "En el contexto proporcionado se habla de la cordillera de los Andes, que, aunque impresionante, no incluye el Monte Everest ni guarda relación directa con la pregunta sobre la montaña más alta del mundo.",
+        "verdict": 0
+      }
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+root-models: /RUTA/DE/LOS/MODELOS
+MODEL_LLM_DIR: "Qwen/Qwen2.5-7B-Instruct"
+MODEL_EMB_DIR: "sentence-transformers/paraphrase-multilingual-mpnet-base-v2"
+
+llm:
+  task: text-generation
+  pipeline_kwargs:
+    max_new_tokens: 512
+    do_sample: true
+    repetition_penalty: 1.03
+    return_full_text: false
+    device_map: auto
+    dtype: auto
+  model_kwargs:
+    load_in_Nbit: true
+
+root: /RUTA/PRINCIPAL/DEL/PROYECTO
+ragas:
+  prompts: prompts      # Carpeta principal donde se deben ubicar los prompts
+  language: spanish     # Idioma en el que se deseen aplicar las métricas
+  metrics:
+  - FAITHFULNESS
+  - CONTEXT_PRECISION_WOREF
+  - CONTEXT_PRECISION_WREF
+  - CONTEXT_RECALL
+  - RESPONSE_RELEVANCY
+  - CONTEXT_RELEVANCE
+
+root-dataset: /RUTA/DE/DATASET
+path-dataset: dataset.jsonl
+
+root-output: /RUTA/DE/RESULTADOS

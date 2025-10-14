@@ -1,0 +1,22 @@
+{
+  "ragas_version": "0.3.6",
+  "original_hash": 1150791507625365446,
+  "language": "spanish",
+  "instruction": "Given a question and an answer, analyze the complexity of each sentence in the answer. Break down each sentence into one or more fully understandable statements. Ensure that no pronouns are used in any statement. Format the outputs in JSON.",
+  "examples": [
+    {
+      "input": {
+        "question": "¿Quién era Albert Einstein y qué es lo que está más conocido por él?",
+        "answer": "Era un físico teórico alemán nacido, ampliamente reconocido como uno de los físicos más grandes e influyentes de todos los tiempos. Se le conoce principalmente por el desarrollo del teorema de la relatividad, también hizo importantes contribuciones al desarrollo del teorema de la mecánica cuántica."
+      },
+      "output": {
+        "statements": [
+          "Albert Einstein era un físico teórico alemán nacido.",
+          "Albert Einstein es reconocido como uno de los físicos más grandes e influyentes de todos los tiempos.",
+          "Albert Einstein se le conoce principalmente por el desarrollo del teorema de la relatividad.",
+          "Albert Einstein también hizo importantes contribuciones al desarrollo del teorema de la mecánica cuántica."
+        ]
+      }
+    }
+  ]
+}
