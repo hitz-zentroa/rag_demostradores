@@ -7,6 +7,7 @@ from openai import OpenAI
 from datetime import datetime
 from reranker import Reranker
 from sentence_transformers import SentenceTransformer
+import copy
 
 class RAG:
     def __init__(self, config_path, indices_config):
@@ -59,7 +60,6 @@ class RAG:
 
         self.MODEL_SYSTEM_PROMPT = self.SYSTEM_PROMPT  # Default system prompt
         self.reranker_model = Reranker(self.reranker_model_path)
-        self.messages = self.initialize_conversation() # Initialize with default prompt
 
         self.available_model_names = list(self.MODELS.keys())
 
@@ -68,6 +68,7 @@ class RAG:
 
         # Initialize the model configuration
         self.change_model(self.MODEL)  # Set the initial model
+
 
     def change_model(self, model_name):
         """
@@ -86,17 +87,6 @@ class RAG:
         # Reinitialize the OpenAI client with the new model
         self.client = OpenAI(base_url=self.openai_base_url, api_key=self.openai_api_key)
 
-        # change the system prompt if necessary
-        self.change_system_prompt()
-
-    def clear_chat(self):
-        """
-        Clear chat history and start a new conversation.
-        :return: Empty chat history and empty context.
-        """
-        self.messages = self.initialize_conversation() # Initialize with default prompt
-        return ([], "<br>")
-
 
     def generate_response(self, chat_history, model, domain, retrieval_method, top_k):
         """
@@ -109,12 +99,16 @@ class RAG:
         :yield: Updated chat history and context for streaming.
         """
         current_user_input = chat_history[-1]["content"] # Get last user message
+        message_list = copy.deepcopy(chat_history)  # Deep copy of chat history to modify
         context_with_date = "" # Initialize context with date
         
         # check if the retrieval method has changed
         if retrieval_method != self.retrieval_method:
             self.retrieval_method = retrieval_method
-            self.change_system_prompt()
+            if self.retrieval_method in ["BM25", "Embeddings"]:
+                self.MODEL_SYSTEM_PROMPT = self.SYSTEM_PROMPT
+            elif self.retrieval_method == "No":
+                self.MODEL_SYSTEM_PROMPT = self.SYSTEM_PROMPT_NO_RETRIEVAL
 
         if retrieval_method in ["BM25", "Embeddings"]:
 
@@ -157,52 +151,33 @@ class RAG:
                     }
                 )
             context_with_date = json.dumps(context_with_date, ensure_ascii=False)
-
             user_message = f"Context:\n- {model_context_with_date}\n\nQuestion: {current_user_input}\n\nAnswer:"
+            message_list[-1]["content"] = user_message  # Update the last user message with context
 
         elif retrieval_method == "No":
             user_message = current_user_input
-
             # SOLO VISUALIZACION
             chat_history.append({"role": "assistant", "content": ""})
             yield (chat_history, context_with_date)
-
-        #add the new message with context
-        self.messages.append({"role": "user", "content": user_message})
-
+        
+        # add system message
+        sysmessage = {"role": "system", "content": self.MODEL_SYSTEM_PROMPT}
+        message_list = [sysmessage] + message_list
+        print("Message list to model:", message_list)
         # GENERATION
-        response_stream = self.chat_with_llama(self.messages) # Stream the response
+        response_stream = self.chat_with_model(message_list) # Stream the response
 
         chat_history[-1]["content"] = ""
         yield (chat_history, context_with_date) # Yield for streaming, use raw user message for display
 
         # Stream the response and update the chat history
-        partial_message = ""
         for chunk in response_stream:
             if chunk.choices[0].delta.content:
                 chat_history[-1]["content"] += chunk.choices[0].delta.content
             yield (chat_history, context_with_date)
 
-        self.messages.append({"role": "assistant", "content": partial_message}) # Append full response to messages_global
-        self.messages[-2]["content"] = current_user_input # Update the last user message with the raw input only without context
-    
 
-    def change_system_prompt(self):
-        """
-        Change the system prompt based on retrieval method, and maintain the rest of the chat history.
-        :return: None
-        """
-
-        previous_messages = self.messages[1:] # Remove the initial system prompt
-        if self.retrieval_method in ["BM25", "Embeddings"]:
-            self.MODEL_SYSTEM_PROMPT = self.SYSTEM_PROMPT
-        elif self.retrieval_method == "No":
-            self.MODEL_SYSTEM_PROMPT = self.SYSTEM_PROMPT_NO_RETRIEVAL
-        self.messages = self.initialize_conversation()
-        self.messages.extend(previous_messages)
-
-
-    def chat_with_llama(self, messages):
+    def chat_with_model(self, messages):
         """
         Chat with the LLM using the API and stream the response.
         :param messages: List of messages to send to the model.
@@ -218,21 +193,6 @@ class RAG:
             stream=True
         )
         return response
-
-
-    def initialize_conversation(self):
-        """
-        Initialize the conversation with the correct system prompt.
-        :return: List of messages with the system prompt.
-        """
-
-        messages = [
-            {
-                "role": "system",
-                "content": self.MODEL_SYSTEM_PROMPT.format(date=today())
-            },
-        ]
-        return messages
     
 
     def search_documents(self, query, n_docs=20, embeddings=False, index=None):

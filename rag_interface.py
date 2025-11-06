@@ -23,6 +23,14 @@ def user_input(user_message, chat_history):
     return "", chat_history
 
 
+def clear_chat(self):
+    """
+    Clear chat history and start a new conversation.
+    :return: Empty chat history and empty context.
+    """
+    return ([], "<br>")
+
+
 def render_sources(raw_data):
     """
     Render the sources from JSON data into HTML format.
@@ -127,7 +135,7 @@ def gradio_app(rag: RAG):
             [chatbot, model, domain, retrieval_method, top_k],
             [chatbot, context_evaluation]
         )
-        clear_button.click(rag.clear_chat, [], [chatbot, context_evaluation], queue=False)
+        clear_button.click(clear_chat, [], [chatbot, context_evaluation], queue=False)
 
         demo.launch(share=True)
 
