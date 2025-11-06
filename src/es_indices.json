@@ -1,0 +1,28 @@
+{
+    "BOPV": {
+        "bm25_index": "bopv_eu_analyzer",
+        "embedding_index": "bopv_eu_mle5",
+        "highlight_field": "contenido_texto",
+        "embedding_field": "embedding",
+        "embedding_text_field": "contenido_texto",
+        "search_fields": [
+            "titulo",
+            "contenido_texto",
+            "temas"
+        ],
+        "filter": "",
+        "metadata_fields":{
+            "title": "titulo",
+            "date": "fechaPublicacion",
+            "url": "url",
+            "id": "id"
+        },  
+        "formatted_text": "**{titulo}**\nData: {fechaPublicacion}\nOrganismoa: {organismo}, {departamento}\nArtikuluaren textu zatia:\n{text}",
+        "formatted_text_fields": [
+            "titulo", 
+            "fechaPublicacion", 
+            "organismo", 
+            "departamento"
+        ] 
+    }
+}

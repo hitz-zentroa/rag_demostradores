@@ -1,0 +1,7 @@
+argparse
+gradio
+requests
+openai
+sentence-transformers
+torch
+transformers
