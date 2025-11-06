@@ -100,13 +100,10 @@ Ejecuta el pipeline de generación aumentada con recuperación (**RAG**).
       "title": "Constitución de Galicia",
       "passage": "O presidente da Xunta é elixido polo Parlamento entre os seus membros.",
       "timestamp": "2023-02-10T12:30:00Z",
-      "url": "https://parlamento.gal/documento/constitucion"
+      "url": "https://parlamento.gal/documento/constitucion",
+      "metadata": {}
     }
   ],
-  "metadata": {
-    "model": "RAG-v1",
-    "runtime_ms": 123
-  }
 }
 ```
 
